@@ -25,6 +25,7 @@ typedef struct tagValue_S
     int             iMark;          /* tag isused */
     void*           pNode;          /* point to key-node */
 }Value_S;
+
 #define tvalues(v)      ((v)->enType)
 #define ivalues(v)      ((v)->unVal.i)
 #define pvalues(v)      ((v)->unVal.pv)
