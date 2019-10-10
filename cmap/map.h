@@ -76,7 +76,6 @@ typedef struct tagKey_S
 #define pcvkey(k)       ((k)->unKeyVal.pc)
 #define ivkey(k)        ((k)->unKeyVal.i)
 
-
 /* api declaration */
 Map_S* MapInit(Type_E enKeyType);
 
@@ -96,6 +95,7 @@ int Add2Map(
     void*           pVal
     );
 #define ADD2IMAP(m, kv, vt, vv)     Add2Map(m, INT, kv, vt, vv)
+#define ADD2SMAP(m, kv, vt, vv)     Add2Map(m, STRING, kv, vt, vv)
 
 int DelFromMap(
     Map_S*           pstMap,

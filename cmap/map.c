@@ -188,7 +188,6 @@ void DestructObj(
     Object_S*   pstObj
     )
 {
-
     int             i               = 0;
     Value_S*        pstVal          = NULL;
     for (pstVal = vobject(pstObj); i < capobject(pstObj); i++)
@@ -298,7 +297,6 @@ int ObjAddEle(
     if ((vobject(pstObj) + nobject(pstObj))->iMark)
     {
         LOGE("can get next available index, please chech it.\n");
-        //AdjustObj(pstObj);
         return F_OK;
     }
 
