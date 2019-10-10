@@ -199,6 +199,7 @@ void DestructObj(
         }
 
         mvalues(pstVal + i) = 0;
+        ndvalues(pstVal + i) = NULL;
         tvalues(pstVal + i) = 0;
         memset(&vobject(pstObj)->unVal, 0, sizeof(vobject(pstObj)->unVal));
     }
@@ -268,6 +269,7 @@ void DeleteObj(
         }
         memset(vobject(pstObj) + iIndex, 0, sizeof(Value_S));
         mvalues(vobject(pstObj) + iIndex) = 0;
+        ndvalues(vobject(pstObj) + iIndex) = NULL;
         cntobject(pstObj)--;
         /* TODO: dynamic resize */
     }
@@ -413,6 +415,7 @@ int Add2Map(
         return iRet;
     }
     idxkey(pstNew) = iIndex;
+    ndvalues(vobject(&objmap(pstMap)) + iIndex) = &pstNew->stNode;
     return iRet;
 }
 

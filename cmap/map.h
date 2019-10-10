@@ -23,11 +23,13 @@ typedef struct tagValue_S
     Type_E          enType;
     Value_U         unVal;
     int             iMark;          /* tag isused */
+    void*           pNode;          /* point to key-node */
 }Value_S;
 #define tvalues(v)      ((v)->enType)
 #define ivalues(v)      ((v)->unVal.i)
 #define pvalues(v)      ((v)->unVal.pv)
 #define mvalues(v)      ((v)->iMark)
+#define ndvalues(v)     ((v)->pNode)
 
 typedef struct tagObject_S
 {
