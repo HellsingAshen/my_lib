@@ -209,27 +209,17 @@ void DestructObj(
 }
 
 /*
- * @ desc   : adjust object array and set next available index after delete and insert operations
+ * @ desc   :   get next aviable index
  * @ in     :
  *              pstObj ---- object array
  * @ out    : 
- * @ cautious : current implementation of dynamic expansion
- *            TODO: dynamic reduction while cntobject(o) <= 1/3 capobject(o) , capobject(o0 = 1/2 capobject(o)
+ * @ cautious : 
+ *  
  */ 
-int AdjustObj(Object_S* pstObj)
+
+int GetNextAviObjIndex(Object_S* pstObj)
 {
-    int             iOldCapacity    = capobject(pstObj);
-    int             i               = 0; 
-    
-    assert(capobject(pstObj) != MAP_MAX_SIZE);
-
-    if (capobject(pstObj) == ++cntobject(pstObj))
-    {
-        capobject(pstObj)   = MIN(capobject(pstObj) * 2, MAP_MAX_SIZE);
-        vobject(pstObj) = realloc(vobject(pstObj), capobject(pstObj) * sizeof(Value_S));
-        memset(vobject(pstObj) + iOldCapacity, 0, (capobject(pstObj) - iOldCapacity) * sizeof(Value_S));
-    }
-
+    int             i              = 0;
     /* backward search */
     for (i = nobject(pstObj); i < capobject(pstObj) && (vobject(pstObj) + i)->iMark; i++);
     if (i == capobject(pstObj))
@@ -243,8 +233,78 @@ int AdjustObj(Object_S* pstObj)
             return F_OK;
         }
     }
-    nobject(pstObj) = i;
-    return OK;
+    return i;
+}
+
+/*
+ * @ desc   : adjust object array and set next available index after delete operations
+ * @ in     :
+ *              pstObj ---- object array
+ * @ out    : 
+ * @ cautious : 
+ *              dynamic reduction while cntobject(o) <= 1/4 capobject(o) , capobject(o0 = 1/2 capobject(o)
+ */ 
+int AdjustDecObj(Object_S* pstObj)
+{
+    /* 1. resize capacityp
+     * 2. adjust obj which index is greater than recapacity
+     * 3. adjuest tree node index 
+     * 4. set next 
+     */
+    //int             iOldCapacity    = capobject(pstObj);
+    int             iNewCapacity    = 0;
+    int             i               = 0; 
+    int             j               = 0; 
+    Key_S*          pstKey          = NULL;
+    
+
+    if (MAP_DEFAULT_SIZE == capobject(pstObj))
+    {
+        return (nobject(pstObj) = GetNextAviObjIndex(pstObj));
+    }
+
+    if ((capobject(pstObj) >> 2) >= (--cntobject(pstObj)))
+    {
+        iNewCapacity   = MAX(capobject(pstObj) >> 1, MAP_DEFAULT_SIZE);
+        for (i = iNewCapacity; i < capobject(pstObj); i++)
+        {
+            if ((vobject(pstObj) + i)->iMark)
+            {
+                for (j = iNewCapacity - 1; j >= 0 && ((vobject(pstObj) + j)->iMark); j--);
+                assert(j >= 0);
+                memcpy(vobject(pstObj) + j, vobject(pstObj) + i, sizeof(Value_S));
+                pstKey = container_of((vobject(pstObj) + i)->pNode, Key_S, stNode);
+                idxkey(pstKey) = j;
+            }
+        }
+        
+        vobject(pstObj) = realloc(vobject(pstObj), iNewCapacity * sizeof(Value_S));
+        capobject(pstObj) = iNewCapacity;
+    }
+    return (nobject(pstObj) = GetNextAviObjIndex(pstObj));
+}
+
+/*
+ * @ desc   : adjust object array and set next available index after insert operations
+ * @ in     :
+ *              pstObj ---- object array
+ * @ out    :  return next aviable index
+ * @ cautious : 
+ *              current implementation of dynamic expansion
+ */ 
+int AdjustIncObj(Object_S* pstObj)
+{
+    int             iOldCapacity    = capobject(pstObj);
+    
+    assert(capobject(pstObj) != MAP_MAX_SIZE);
+
+    if (capobject(pstObj) == ++cntobject(pstObj))
+    {
+        capobject(pstObj)   = MIN(capobject(pstObj) * 2, MAP_MAX_SIZE);
+        vobject(pstObj) = realloc(vobject(pstObj), capobject(pstObj) * sizeof(Value_S));
+        memset(vobject(pstObj) + iOldCapacity, 0, (capobject(pstObj) - iOldCapacity) * sizeof(Value_S));
+    }
+    return (nobject(pstObj) = GetNextAviObjIndex(pstObj));
 }
 
 /*   
@@ -270,7 +330,7 @@ void DeleteObj(
         mvalues(vobject(pstObj) + iIndex) = 0;
         ndvalues(vobject(pstObj) + iIndex) = NULL;
         cntobject(pstObj)--;
-        /* TODO: dynamic resize */
+        assert(F_OK != AdjustDecObj(pstObj));
     }
     return;
 }
@@ -283,7 +343,7 @@ void DeleteObj(
  *          pVal   ---- inserted object-val
  * out  :
  *          piIndex ---- inserted position 
- *          return value ----  success ok, others failure
+ *          return value ----  next aviable index
  */
 int ObjAddEle(
     Object_S*       pstObj,
@@ -313,9 +373,8 @@ int ObjAddEle(
 
     mvalues(vobject(pstObj) + nobject(pstObj)) = 1;
     *piIndex = nobject(pstObj);
-    AdjustObj(pstObj);
 
-    return OK;
+    return (AdjustIncObj(pstObj));
 }
 #endif
 

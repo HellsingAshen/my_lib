@@ -24,16 +24,16 @@ int main()
 
     /* add key-string test */
     iRet = Add2Map(pstStrKey, STRING, "six", INT, (void*)6);
-    assert(0 == iRet);
+    assert(F_OK != iRet);
 
     iRet = Add2Map(pstStrKey, STRING, "seven", STRING, "7th");
-    assert(0 == iRet);
+    assert(F_OK != iRet);
 
     iRet = Add2Map(pstStrKey, STRING, "eigth", INT, (void*)8);
-    assert(0 == iRet);
+    assert(F_OK != iRet);
 
     iRet = Add2Map(pstStrKey, STRING, "nine", STRING, "9th");
-    assert(0 == iRet);
+    assert(F_OK != iRet);
 
     /* serach key-string test */
     iRet = SearchMap(pstStrKey, STRING, "six", &iType, &pVal);
@@ -76,18 +76,17 @@ int main()
     for (; i < 3; i++)
     {
         iRet = Add2Map(pstIntKey, INT, (void*)(unsigned long long)i, INT, (void*)(unsigned long long)(i * 100));
-        assert(0 == iRet);
+        assert(F_OK != iRet);
     }
 
     iRet = ADD2IMAP(pstIntKey, (void*)3, STRING, "three");
-    assert(0 == iRet);
+    assert(F_OK != iRet);
 
     iRet = ADD2IMAP(pstIntKey, (void*)4, STRING, "four");
-    assert(0 == iRet);
+    assert(F_OK != iRet);
 
     iRet = ADD2IMAP(pstIntKey, (void*)5, STRING, "five");
-    assert(0 == iRet);
-
+    assert(F_OK != iRet);
 
     /* serach  test*/
     iRet = SearchMap(pstIntKey, INT, (void*)1, &iValType, &pVal);

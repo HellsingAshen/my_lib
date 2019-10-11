@@ -3,7 +3,7 @@
 #include "rbtree.h"
 #include <string.h>
 
-#include "macro.h"
+#include "cmap_macro.h"
 
 typedef enum 
 {
